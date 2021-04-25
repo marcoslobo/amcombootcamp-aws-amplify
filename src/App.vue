@@ -31,14 +31,73 @@
 
     <v-main>
       <amplify-authenticator>
-        <Album :user="this.user" />
+        <div>
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-flex sm6 offset-sm3>
+                  <v-card
+                    ><v-card-title>Upload a new file</v-card-title>
+                    <v-file-input
+                      accept="image/*"
+                      color="deep-purple accent-4"
+                      append-outer-icon="mdi-send"
+                      label="File input"
+                      placeholder="Select your files"
+                      prepend-icon="mdi-paperclip"
+                      @click:append-outer="upload"
+                      v-model="uploadFile"
+                    ></v-file-input>
+                  </v-card>
+                </v-flex>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-spacer></v-spacer>
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-flex sm6 offset-sm3>
+                  <v-card>
+                    <v-toolbar color="cyan" dark>
+                      <v-toolbar-title>Files</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                    </v-toolbar>
+                    <template v-for="item in files">
+                      <v-list-item :key="item.key">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.key }}</v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn icon ripple>
+                            <v-icon color="darken-2">
+                              mdi-download
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                        <v-list-item-action @click="deleteFile(item.key)">
+                          <v-btn icon ripple>
+                            <v-icon color="darken-2">
+                              mdi-delete
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </template>
+                  </v-card>
+                </v-flex>
+              </v-col>
+              <!-- </v-col> -->
+            </v-row>
+          </v-container>
+        </div>
       </amplify-authenticator>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Album from "./components/Album";
+import { Storage } from "aws-amplify";
 import { onAuthUIStateChange } from "@aws-amplify/ui-components";
 
 export default {
@@ -47,21 +106,54 @@ export default {
     this.unsubscribeAuth = onAuthUIStateChange((authState, authData) => {
       this.authState = authState;
       this.user = authData;
+      if (authState === "signedin") {
+        this.getFiles();
+      }
     });
   },
-  components: {
-    Album,
-  },
+  components: {},
   methods: {
-    async fhandleAuthStateChange(state) {
-      console.log(state);
-      console.log("af");
+    async getFiles() {
+      console.log(this.user);
+
+      Storage.list("", { level: "private" })
+        .then((result) => (this.files = result))
+        .catch((err) => console.log(err));
+    },
+    async deleteFile(key) {
+      //console.log(key);
+      // const todo = { acao: "TESTE", email: "teste@teste.com" };
+      // const createdItem = await API.graphql(
+      //   graphqlOperation(createTodo, {
+      //     input: todo,
+      //   })
+      // );
+      //console.log(createdItem);
+
+      Storage.remove(key, { level: "private" })
+        .then(this.getFiles())
+        .catch((err) => console.log(err));
+    },
+    upload: async function() {
+      // upload to s3
+      try {
+        console.log(this.uploadFile);
+        await Storage.put(this.uploadFile.name, this.uploadFile, {
+          level: "private",
+          contentType: this.uploadFile.type,
+        }).then(() => this.getFiles());
+      } catch (err) {
+        console.error("Error uploading file: ", err);
+      }
+      this.uploadFile = null;
     },
   },
   data: () => ({
     user: undefined,
     authState: undefined,
     unsubscribeAuth: undefined,
+    files: [],
+    uploadFile: null,
   }),
   beforeDestroy() {
     this.unsubscribeAuth();
