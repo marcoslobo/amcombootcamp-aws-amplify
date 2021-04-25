@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amcombootcampwebapp-dev-192438-authRole",
+      "UnauthRoleArn": "arn:aws:iam::567510561047:role/amplify-amcombootcampwebapp-dev-192438-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::567510561047:role/amplify-amcombootcampwebapp-dev-192438-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-amcombootcampwebapp-dev-192438-deployment",
+      "UnauthRoleName": "amplify-amcombootcampwebapp-dev-192438-unauthRole",
+      "StackName": "amplify-amcombootcampwebapp-dev-192438",
+      "StackId": "arn:aws:cloudformation:us-east-1:567510561047:stack/amplify-amcombootcampwebapp-dev-192438/32d116c0-a227-11eb-976a-12a15ea63a5b",
+      "AmplifyAppId": "d2ndp2yldl7s6c"
+    },
+    "categories": {
+      "auth": {
+        "amcombootcampwebapp2dbe4efa": {}
+      }
+    }
+  }
+}

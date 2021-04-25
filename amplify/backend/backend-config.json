@@ -1,0 +1,18 @@
+{
+  "auth": {
+    "amcombootcampwebapp2dbe4efa": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  },
+  "function": {},
+  "storage": {
+    "userfiles": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
+  },
+  "api": {}
+}
