@@ -1,0 +1,6 @@
+type Auditoria @model {
+  id: ID!
+  email: String!
+  action: String!
+  key:String   
+}
