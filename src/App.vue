@@ -300,7 +300,7 @@ export default {
       {
         type: "email",
         label: "Email",
-        placeholder: "Seu email",
+        placeholder: "Your email",
         inputProps: { required: true, autocomplete: "username" },
       },
       {
