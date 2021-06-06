@@ -4,7 +4,11 @@
       <div class="d-flex align-center">
         <span style="font-size:20pt;">LOBO FILES</span>
       </div>
-
+      <!-- <center>
+        <div v-if="authState === 'signedin' && user">
+          <span> Hello {{ user.attributes.email }} </span>
+        </div>
+      </center> -->
       <v-spacer></v-spacer>
       <v-btn
         v-if="authState === 'signedin' && user"
@@ -12,7 +16,7 @@
         class="ma-2 white--text"
         @click="sendAuditoria"
       >
-        Log de auditoria
+        Audit logs
         <v-icon right dark>
           mdi-cloud-search
         </v-icon>
@@ -24,17 +28,34 @@
     </v-app-bar>
 
     <v-main>
-      <amplify-authenticator
-        :form-fields.prop="signUpFormFields"
-        usernameAlias="email"
-      >
+      <amplify-authenticator username-alias="email">
+        <amplify-sign-in
+          slot="sign-in"
+          :form-fields.prop="formFieldsSignIn"
+        ></amplify-sign-in>
+        <amplify-confirm-sign-in
+          slot="confirm-sign-in"
+        ></amplify-confirm-sign-in>
+        <amplify-sign-up
+          slot="sign-up"
+          username-alias="email"
+          :form-fields.prop="formFieldsSignUp"
+        ></amplify-sign-up>
+
+        <amplify-forgot-password
+          slot="forgot-password"
+          :form-fields.prop="formFieldsForgotPassword"
+        ></amplify-forgot-password>
+        <amplify-require-new-password
+          slot="require-new-password"
+        ></amplify-require-new-password>
         <div>
           <v-container>
             <v-row>
               <v-col>
                 <v-flex sm6 offset-sm3>
                   <v-card
-                    ><v-card-title>Envie um novo arquivo</v-card-title>
+                    ><v-card-title>Send new File</v-card-title>
                     <v-file-input
                       accept="image/*"
                       color="deep-purple accent-4"
@@ -56,8 +77,8 @@
               <v-col>
                 <v-flex sm6 offset-sm3>
                   <v-card>
-                    <v-toolbar color="cyan" dark>
-                      <v-toolbar-title>Seus arquivos</v-toolbar-title>
+                    <v-toolbar color="#1976d2" dark>
+                      <v-toolbar-title>Your Files</v-toolbar-title>
                       <v-spacer></v-spacer>
                     </v-toolbar>
                     <template v-for="item in files">
@@ -107,7 +128,7 @@ import { createAuditoria } from "@/graphql/mutations";
 const Swal = require("sweetalert2");
 const Toast = Swal.mixin({
   toast: true,
-  position: "top-end",
+  position: "bottom-end",
   showConfirmButton: false,
   timer: 3000,
   timerProgressBar: true,
@@ -142,23 +163,21 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
     },
     async getFiles() {
+      Storage.list("", { level: "private" })
+        .then((result) => {
+          this.files = result;
+        })
+        .catch((err) => console.log(err));
+    },
+    async deleteFile(key) {
       Swal.fire({
-        title: "Carregando...",
+        title: "Loading...",
         allowEscapeKey: false,
         allowOutsideClick: false,
         onOpen: () => {
           Swal.showLoading();
         },
       });
-
-      Storage.list("", { level: "private" })
-        .then((result) => {
-          this.files = result;
-          Swal.close();
-        })
-        .catch((err) => console.log(err));
-    },
-    async deleteFile(key) {
       Storage.remove(key, { level: "private" })
         .then(() => {
           API.graphql(
@@ -170,6 +189,7 @@ export default {
               },
             })
           );
+          Swal.close();
           Toast.fire({
             icon: "success",
             title: "File removed!",
@@ -180,7 +200,7 @@ export default {
     },
     upload: async function() {
       Swal.fire({
-        title: "Carregando...",
+        title: "Loading...",
         allowEscapeKey: false,
         allowOutsideClick: false,
         onOpen: () => {
@@ -202,9 +222,10 @@ export default {
               },
             })
           );
+          Swal.close();
           Toast.fire({
             icon: "success",
-            title: "File Uploaded!",
+            title: "File uploaded",
           });
           this.getFiles();
         });
@@ -215,7 +236,7 @@ export default {
     },
     downloadFile: async function(key) {
       Swal.fire({
-        title: "Carregando...",
+        title: "Loading...",
         allowEscapeKey: false,
         allowOutsideClick: false,
         onOpen: () => {
@@ -246,7 +267,7 @@ export default {
     },
     sendAuditoria: async function() {
       Swal.fire({
-        title: "Carregando...",
+        title: "Loading...",
         allowEscapeKey: false,
         allowOutsideClick: false,
         onOpen: () => {
@@ -264,7 +285,7 @@ export default {
         Swal.close();
         Toast.fire({
           icon: "success",
-          title: "Foi enviado um email com o log de auditoria!",
+          title: "Check your email",
         });
       });
     },
@@ -275,18 +296,40 @@ export default {
     unsubscribeAuth: undefined,
     files: [],
     uploadFile: null,
-    signUpFormFields: [
-      {
-        type: "username",
-        required: true,
-      },
+    formFieldsSignIn: [
       {
         type: "email",
-        required: true,
+        label: "Email",
+        placeholder: "Seu email",
+        inputProps: { required: true, autocomplete: "username" },
       },
       {
         type: "password",
-        required: true,
+        label: "Password",
+        placeholder: "Safe password",
+        inputProps: { required: true, autocomplete: "new-password" },
+      },
+    ],
+    formFieldsSignUp: [
+      {
+        type: "email",
+        label: "Email",
+        placeholder: "Your email",
+        inputProps: { required: true, autocomplete: "username" },
+      },
+      {
+        type: "password",
+        label: "Password",
+        placeholder: "Your safe password",
+        inputProps: { required: true, autocomplete: "new-password" },
+      },
+    ],
+    formFieldsForgotPassword: [
+      {
+        type: "email",
+        label: "Email",
+        placeholder: "Seu email",
+        inputProps: { required: true, autocomplete: "username" },
       },
     ],
   }),
