@@ -341,7 +341,14 @@ export default {
 };
 </script>
 <style scoped>
-amplify-sign-in {
+amplify-sign-in,
+amplify-confirm-sign-in,
+amplify-sign-up,
+amplify-confirm-sign-up,
+amplify-forgot-password,
+amplify-require-new-password,
+amplify-verify-contact,
+amplify-totp-setup {
   position: absolute;
   top: 0;
   margin-top: 20px;
