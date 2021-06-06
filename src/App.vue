@@ -28,6 +28,8 @@
     </v-app-bar>
 
     <v-main>
+      <br />
+      <br />
       <amplify-authenticator username-alias="email">
         <amplify-sign-in
           slot="sign-in"
@@ -338,3 +340,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+amplify-sign-in {
+  position: absolute;
+  top: 0;
+  margin-top: 20px;
+}
+</style>
