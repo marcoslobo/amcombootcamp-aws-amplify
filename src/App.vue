@@ -351,7 +351,7 @@ amplify-verify-contact,
 amplify-authenticator,
 amplify-totp-setup {
   top: 0;
-  margin-top: 20px;
+  margin-top: 21px;
   --container-align: 0;
 }
 </style>
