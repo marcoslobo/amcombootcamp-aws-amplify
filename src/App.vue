@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <span style="font-size:20pt;">LOBO FILES</span>
+        <span style="font-size:20pt;">LOBO FILES!</span>
       </div>
       <!-- <center>
         <div v-if="authState === 'signedin' && user">
